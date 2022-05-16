@@ -1,4 +1,23 @@
+
+const skl = (num, titles) => {
+  const suffix = titles[
+    num % 10 === 1 && num % 100 !== 11 ? 0 :
+     num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 ||
+       num % 100 >= 20) ? 1 : 2];
+  return (suffix);
+};
+
+const plusZero = (num) => {
+  if (num < 10) {
+    return '0' + num;
+  } else {
+    return num;
+  }
+};
 export const timer = deadline => {
+  const a = ['минута', 'минуты', 'минут'];
+  const b = ['день', 'дня', 'дней'];
+  const c = ['час', 'часа', 'часов'];
   const timerCountDays = document.querySelector('.timer__count_days');
   const timerCountHours = document.querySelector('.timer__count_hours');
   const timerCountMinutes = document.querySelector('.timer__count_minutes');
@@ -22,44 +41,14 @@ export const timer = deadline => {
   const start = () => {
     const timer = getTimeRemaining();
 
-    if (/[2-9][1]/.exec(timer.days) || timer.days === 1) {
-      timerUnitsDays.textContent = 'день';
-    } else if (timer.days <= 4 && timer.days > 1 ||
-         (/[2-9][234]/.exec(timer.days))) {
-      timerUnitsDays.textContent = 'дня';
-    } else if (timer.days >= 5 || timer.days === 0) {
-      timerUnitsDays.textContent = 'дней';
-    }
-
     timerCountDays.textContent = timer.days;
+    timerUnitsDays.textContent = skl(timer.days, b);
 
-    if (timer.hours === 21 || timer.hours === 1) {
-      timerUnitsHours.textContent = 'час';
-    } else if (/[02][234]/.exec(timer.hours)) {
-      timerUnitsHours.textContent = 'часа';
-    } else if (timer.hours >= 5 || timer.hours === 0) {
-      timerUnitsHours.textContent = 'часов';
-    }
-    if (timer.hours < 10) {
-      timerCountHours.textContent = '0' + timer.hours;
-    } else {
-      timerCountHours.textContent = timer.hours;
-    }
+    timerUnitsHours.textContent = skl(timer.hours, c);
+    timerCountHours.textContent = plusZero(timer.hours);
 
-    if (/[2-5][1]/.exec(timer.minutes) || timer.minutes === 1) {
-      timerUnitsMinutes.textContent = 'минута';
-    } else if (timer.minutes <= 4 && timer.minutes > 1 ||
-         (/[2-5][234]/.exec(timer.minutes))) {
-      timerUnitsMinutes.textContent = 'минуты';
-    } else if (timer.minutes >= 5 || timer.minutes === 0) {
-      timerUnitsMinutes.textContent = 'минут';
-    }
-
-    if (timer.minutes < 10) {
-      timerCountMinutes.textContent = '0' + timer.minutes;
-    } else {
-      timerCountMinutes.textContent = timer.minutes;
-    }
+    timerUnitsMinutes.textContent = skl(timer.minutes, a);
+    timerCountMinutes.textContent = plusZero(timer.minutes);
 
     const intervalId = setTimeout(start, 1000);
     if (timer.timeRemaining <= 0) {
