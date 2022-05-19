@@ -1,5 +1,5 @@
 
-const skl = (num, titles) => {
+export const skl = (num, titles) => {
   const suffix = titles[
     num % 10 === 1 && num % 100 !== 11 ? 0 :
      num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 ||
