@@ -96,3 +96,84 @@ priceInfoBtn.addEventListener('click', e => {
 });
 
 
+const fetchRequest = async (url, {
+  method = 'GET',
+  callback,
+  body,
+  headers,
+}) => {
+  try {
+    const options = {
+      method,
+    };
+    if (body) options.body = JSON.stringify(body);
+    if (headers) options.headers = headers;
+    const response = await fetch(url, options);
+    if (response.ok) {
+      const data = await response.json();
+      if (callback) callback(null, data);
+      return;
+    }
+
+    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+  } catch (err) {
+    callback(err);
+  }
+};
+
+const name = document.querySelector('#reservation__name');
+const phone = document.querySelector('#reservation__phone');
+const reservationForm = document.querySelector('.reservation__form');
+reservationForm.addEventListener('submit', e => {
+  e.preventDefault();
+  fetchRequest('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    body: {
+      date: reservationDate.options[reservationDate.selectedIndex].text,
+      people: reservationPeople.options[reservationPeople.selectedIndex].text,
+      name: name.value,
+      phone: phone.value,
+
+    },
+    callback(err, data) {
+      if (err) {
+        reservationForm.textContent = `Чтото пошло не так. Ошибка: ${err}`;
+      }
+
+      reservationForm.textContent =
+      `Заявка успешно отправлена, номер заявки ${data.id}`;
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+});
+const footerForm = document.querySelector('.footer__form');
+const footerFormTitle = document.querySelector('.footer__form-title');
+const footerText = document.querySelector('.footer__text');
+const footerInput = document.querySelector('.footer__input');
+
+footerForm.addEventListener('submit', e => {
+  e.preventDefault();
+  fetchRequest('https://jsonplaceholder.typicode.com/posts', {
+    method: 'POST',
+    body: {
+      email: footerInput.value,
+    },
+    callback(err, data) {
+      if (err) {
+        footerForm.textContent = `Чтото пошло не так. ${err}`;
+      }
+
+      footerFormTitle.textContent = `Ваша заявка успешно отправлена`;
+      footerText.textContent = `Наши менеджеры свяжутся с вами в течении 3-х рабочих дней`;
+      footerText.style.border = 'solid 2px red';
+      footerText.style.padding = '30px';
+      document.querySelector('.footer__input-wrap').style.display = 'none';
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+});
+
