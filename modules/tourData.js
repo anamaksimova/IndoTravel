@@ -1,4 +1,5 @@
 import {skl} from './timer.js';
+import {showModal} from './modal.js';
 const loadTours = async () => {
   const result = await fetch('tours.json');
   const tourData = await result.json();
@@ -124,29 +125,29 @@ const fetchRequest = async (url, {
 const name = document.querySelector('#reservation__name');
 const phone = document.querySelector('#reservation__phone');
 const reservationForm = document.querySelector('.reservation__form');
-reservationForm.addEventListener('submit', e => {
+reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  fetchRequest('https://jsonplaceholder.typicode.com/posts', {
+  const checkReservation = await fetchRequest('https://jsonplaceholder.typicode.com/posts', {
     method: 'POST',
     body: {
       date: reservationDate.options[reservationDate.selectedIndex].text,
       people: reservationPeople.options[reservationPeople.selectedIndex].text,
       name: name.value,
       phone: phone.value,
-
+      price: +document.querySelector('.reservation__price').textContent.slice(0, -1),
     },
-    callback(err, data) {
-      if (err) {
-        reservationForm.textContent = `Чтото пошло не так. Ошибка: ${err}`;
-      }
-
-      reservationForm.textContent =
-      `Заявка успешно отправлена, номер заявки ${data.id}`;
-    },
+    callback: showModal,
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  if (checkReservation) {
+    reservationDate.setAttribute('disabled', '');
+    reservationPeople.setAttribute('disabled', '');
+    name.setAttribute('disabled', '');
+    phone.setAttribute('disabled', '');
+  }
 });
 const footerForm = document.querySelector('.footer__form');
 const footerFormTitle = document.querySelector('.footer__form-title');
