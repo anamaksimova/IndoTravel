@@ -9,9 +9,9 @@ const loadStyle = url => {
       resolve();
     });
     document.head.append(link);
-  
-   
-  });  styles.set(url, stylePromise); return stylePromise;
+  });
+  styles.set(url, stylePromise);
+  return stylePromise;
 };
 
 export default loadStyle;

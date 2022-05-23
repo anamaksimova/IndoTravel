@@ -127,24 +127,27 @@ const phone = document.querySelector('#reservation__phone');
 const reservationForm = document.querySelector('.reservation__form');
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const checkReservation = await fetchRequest('https://jsonplaceholder.typicode.com/posts', {
-    method: 'POST',
-    body: {
-      date: reservationDate.options[reservationDate.selectedIndex].text,
-      people: reservationPeople.options[reservationPeople.selectedIndex].text,
-      name: name.value,
-      phone: phone.value,
-      price: +document.querySelector('.reservation__price').textContent.slice(0, -1),
-    },
-    callback: showModal,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const body = {
+    date: reservationDate.options[reservationDate.selectedIndex].text,
+    people: reservationPeople.options[reservationPeople.selectedIndex].text,
+    name: name.value,
+    phone: phone.value,
+    price: +document.querySelector('.reservation__price').textContent.slice(0, -1),
+  };
+  const check = await showModal(null, body);
 
-  if (checkReservation) {
+  if (check) {
+    fetchRequest('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
     reservationDate.setAttribute('disabled', '');
     reservationPeople.setAttribute('disabled', '');
+    document.querySelector('.reservation__button').setAttribute('disabled', '');
     name.setAttribute('disabled', '');
     phone.setAttribute('disabled', '');
   }

@@ -43,11 +43,13 @@ export const showModal = async (err, data) => {
   document.body.append(overlay);
   return new Promise(resolve => {
     btnConfirm.addEventListener('click', () => {
+      console.log('1');
       overlay.remove();
       resolve(true);
     });
 
     btnReject.addEventListener('click', () => {
+      console.log('2');
       overlay.remove();
       resolve(false);
     });
