@@ -124,9 +124,27 @@ const fetchRequest = async (url, {
 
 const name = document.querySelector('#reservation__name');
 const phone = document.querySelector('#reservation__phone');
+
+name.addEventListener('input', () => {
+  name.value = name.value.replace(/[^А-Яа-яЁё\s]/, '');
+});
+phone.addEventListener('input', () => {
+  phone.value = phone.value.replace(/[^\d+]/, '');
+});
+
+const fio = (str, reg) => {
+  let fio = false;
+  const m = str.match(reg);
+  if (m.length >= 2) fio = true;
+  return fio;
+};
+
 const reservationForm = document.querySelector('.reservation__form');
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  const reg = /[\s]/g;
+  const fiocheck = fio(name.value, reg);
+
   const body = {
     date: reservationDate.options[reservationDate.selectedIndex].text,
     people: reservationPeople.options[reservationPeople.selectedIndex].text,
@@ -134,22 +152,24 @@ reservationForm.addEventListener('submit', async (e) => {
     phone: phone.value,
     price: +document.querySelector('.reservation__price').textContent.slice(0, -1),
   };
-  const check = await showModal(null, body);
+  if (fiocheck) {
+    const check = await showModal(null, body);
 
-  if (check) {
-    fetchRequest('https://jsonplaceholder.typicode.com/posts', {
-      method: 'POST',
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    if (check) {
+      fetchRequest('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST',
+        body,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    reservationDate.setAttribute('disabled', '');
-    reservationPeople.setAttribute('disabled', '');
-    document.querySelector('.reservation__button').setAttribute('disabled', '');
-    name.setAttribute('disabled', '');
-    phone.setAttribute('disabled', '');
+      reservationDate.setAttribute('disabled', '');
+      reservationPeople.setAttribute('disabled', '');
+      document.querySelector('.reservation__button').setAttribute('disabled', '');
+      name.setAttribute('disabled', '');
+      phone.setAttribute('disabled', '');
+    }
   }
 });
 const footerForm = document.querySelector('.footer__form');
