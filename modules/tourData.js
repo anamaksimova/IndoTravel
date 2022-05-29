@@ -1,5 +1,9 @@
 import {skl} from './timer.js';
 import {showModal} from './modal.js';
+
+
+const telMask = new Inputmask('+7 (999)-999-99-99');
+
 const loadTours = async () => {
   const result = await fetch('tours.json');
   const tourData = await result.json();
@@ -124,26 +128,54 @@ const fetchRequest = async (url, {
 
 const name = document.querySelector('#reservation__name');
 const phone = document.querySelector('#reservation__phone');
+telMask.mask(phone);
+const justValidate = new JustValidate('.reservation__form');
+justValidate
+    .addField('#reservation__name', [
+      {rule: 'required',
+        errorMessage: 'Укажите фамилию, имя и отчество',
+      },
+      {rule: 'minLength',
+        value: 5,
+        errorMessage: 'Слишком короткое',
+      },
+      {rule: 'maxLength',
+        value: 100,
+        errorMessage: 'Слишком длинное',
+      },
+    ])
+    .addField('#reservation__phone',
+        [
+          {rule: 'required',
+            errorMessage: 'Укажите телефон'},
+          {
+            validator(value) {
+              const tel = phone.inputmask.unmaskedvalue();
+              return !!(Number(tel) && tel.length === 10);
+            },
+            errorMessage: 'Телефон не корректен',
+          },
+
+        ]);
+
 
 name.addEventListener('input', () => {
   name.value = name.value.replace(/[^А-Яа-яЁё\s]/, '');
 });
-phone.addEventListener('input', () => {
-  phone.value = phone.value.replace(/[^\d+]/, '');
-});
 
-const fio = (str, reg) => {
-  let fio = false;
+
+const fullname = (str, reg) => {
+  let fullname = false;
   const m = str.match(reg);
-  if (m.length >= 2) fio = true;
-  return fio;
+  if (m.length >= 2) fullname = true;
+  return fullname;
 };
 
 const reservationForm = document.querySelector('.reservation__form');
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const reg = /[\s]/g;
-  const fiocheck = fio(name.value, reg);
+  const fullnamecheck = fullname(name.value, reg);
 
   const body = {
     date: reservationDate.options[reservationDate.selectedIndex].text,
@@ -152,7 +184,7 @@ reservationForm.addEventListener('submit', async (e) => {
     phone: phone.value,
     price: +document.querySelector('.reservation__price').textContent.slice(0, -1),
   };
-  if (fiocheck) {
+  if (fullnamecheck) {
     const check = await showModal(null, body);
 
     if (check) {
