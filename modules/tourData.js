@@ -1,5 +1,6 @@
 import {skl} from './timer.js';
 import {showModal} from './modal.js';
+// import {Inputmask} from './modules/inputmask.min.js';
 
 
 const telMask = new Inputmask('+7 (999)-999-99-99');
