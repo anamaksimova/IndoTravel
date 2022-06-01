@@ -126,7 +126,18 @@ const fetchRequest = async (url, {
     callback(err);
   }
 };
+const fullname = (str, reg) => {
+  let fullname = false;
+  const m = str.match(reg);
+  if (m === null) {
+    fullname = false;
+  } else {
+    if (m.length >= 2) fullname = true;
+    if (m.length < 2) fullname = false;
+  }
 
+  return fullname;
+};
 const name = document.querySelector('#reservation__name');
 const phone = document.querySelector('#reservation__phone');
 telMask.mask(phone);
@@ -143,6 +154,13 @@ justValidate
       {rule: 'maxLength',
         value: 100,
         errorMessage: 'Слишком длинное',
+      },
+      {
+        validator(value) {
+          const reg = /.[\s]./g;
+          return fullname(value, reg);
+        },
+        errorMessage: 'Укажите фамилию, имя и отчество',
       },
     ])
     .addField('#reservation__phone',
@@ -165,17 +183,10 @@ name.addEventListener('input', () => {
 });
 
 
-const fullname = (str, reg) => {
-  let fullname = false;
-  const m = str.match(reg);
-  if (m.length >= 2) fullname = true;
-  return fullname;
-};
-
 const reservationForm = document.querySelector('.reservation__form');
 reservationForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const reg = /[\s]/g;
+  const reg = /.[\s]./g;
   const fullnamecheck = fullname(name.value, reg);
 
   const body = {
